@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Promises Fetch Async Await</title>
+  <link rel="stylesheet" href="css/pokedex.css">
+</head>
+
+<body>
+  <div class="pokedex">
+    <div class="pantalla">
+      <img src="img/loader.gif" alt="" width="70px" height="70px" class="loader hidden" id="loader">
+      <img src="" alt="" id="pokemon-image">
+    </div>
+    <p class="nombre" id="pokemon"></p>
+    <form action="" id="form" method="POST">
+      <input name="pokemon" type="text">
+      <button>Buscar</button>
+    </form>
+  </div>
+  <script>
+    const $loader = document.getElementById('loader');
+
+    // Eventos
+    // Son las reacciones a las acciones ejecutadas por el usuario
+    // const $form = document.getElementById('form');
+    // $form.addEventListener('submit',async (event) => {
+    //   event.preventDefault();
+    //   // Esta parte nos sirve para mandar llamar los datos de un form
+    //   const form = new FormData($form);
+    //   const pokemonName = form.get('pokemon');
+    //   // console.log(pokemonName);
+    //   const pokemonData = await getPokemon(pokemonName);
+    //   buildPokemon(pokemonData, $pokemon, $pokemonImage);
+    // });
+    const buscarPokemon = async (event) => {
+      event.preventDefault();
+      $loader.classList.remove('hidden');
+      $pokemonImage.style.display = 'none';
+      // Esta parte nos sirve para mandar llamar los datos de un form
+      const form = new FormData($form);
+      const pokemonName = form.get('pokemon');
+      // console.log(pokemonName);
+      const pokemonData = await getPokemon(pokemonName);
+      buildPokemon(pokemonData, $pokemon, $pokemonImage);
+    };
+
+    const $form = document.getElementById('form');
+    $form.addEventListener('submit', buscarPokemon);
+
+    // Arrow function hereda el contexto de la "función" padre
+    // Sirve para usar el this
+    // Enviar datos sensibles por POST
+    // event.currentTarget() === $form
+
+    // fetch('https://pokeapi.co/api/v2/pokemon/pikachu')
+    // GET, POS, PUT, DELETE
+    // Normalmente trabajamos solo la parte de GET de Fetch
+    // Cuando ocupas POST pasas un segundo parámetro al fetch
+
+    // Promises
+
+    // // Código sincróno
+    // const nombre = 'Leonidas';
+    // const apellido = 'Esteban';
+    // const nombreCompleto = nombre + apellido;
+    // console.log(nombreCompleto);
+
+    // // Código asincróno 1
+    // const nombre = 'Leonidas';
+    // // Primer parámetro funcion 
+    // // Segundo parámetro tiempo en ms
+    // setTimeout(function () {
+    //     const apellido = 'Esteban';
+    // }, 1000);
+    // const nombreCompleto = nombre + apellido;
+    // console.log(nombreCompleto);
+    // // Apellido no definido
+
+    // // Código asincróno 1
+    // const nombre = 'Leonidas';
+    // let apellido;
+    // setTimeout(function () {
+    //     apellido = 'Esteban';
+    // }, 1000);
+    // const nombreCompleto = nombre + apellido;
+    // console.log(nombreCompleto);
+    // // Undefined
+
+    // Callbacks
+    // Es una función que se pasa como parámetro a otra función
+
+    // const nombre = 'Leonidas';
+    // const apellido = () => {
+    //     let apellido = 'Esteban';
+    //     setTimeout(function () {
+    //         let segundoApellido = 'Gonzalez';
+    //         const nombreCompleto = nombre + ' ' + apellido + ' ' + segundoApellido;
+    //         console.log(nombreCompleto);
+    //     }, 1000)
+    // };
+    // setTimeout(apellido, 1000);
+    // Devuelve el nombre completo después de 2 segundos
+
+    // Promises
+    // Se puede cumplir o no
+
+    // const tiempo = 11;
+    // const promesa = new Promise((todoBien, todoMal) => {
+    //   if (tiempo === 11) {
+    //     todoBien()
+    //   } else {
+    //     todoMal();
+    //   }
+    // })
+    //   .then(() => {
+    //     console.log('Leonidas llego puntual');
+    //   })
+    //   .catch(() => {
+    //     console.log('Leonidas llego tarde');
+    //   })
+
+    const $pokemon = document.getElementById('pokemon');
+    const $pokemonImage = document.getElementById('pokemon-image');
+
+    const buildPokemon = (pokemon, $nameContainer, $imageContainer) => {
+      $imageContainer.style.display = 'block';
+      $loader.classList.add('hidden');
+      $nameContainer.innerHTML = pokemon.name;
+      $imageContainer.setAttribute('src', pokemon.sprites.front_default);
+
+      const msg = new SpeechSynthesisUtterance();
+      msg.text = pokemon.name;
+      speechSynthesis.speak(msg);
+    };
+
+    const getPokemon = async (pokemonId) => {
+      const respuesta = await fetch(`https://pokeapi.co/api/v2/pokemon/${pokemonId}`);
+      const pokemon = await respuesta.json();
+      return pokemon;
+    };
+    // const getPokemon = (pokemonId) => {
+    //   fetch(`https://pokeapi.co/api/v2/pokemon/${pokemonId}`)
+    //   .then((respuesta) => {
+    //   console.log(respuesta);
+    //   respuesta.json()
+    //     .then((pokemon) => {
+    //       console.log(pokemon.name);
+    //       // El $ es una convención para marcar un selector
+    //       // Viene de el uso de jQuery y nos indica un elemento del DOM
+    //       const $pokemon = document.getElementById('pokemon');
+    //       const $pokemonImage = document.getElementById('pokemon-image');
+    //       // innerHTML es una propiedad
+    //       $pokemon.innerHTML = pokemon.name;
+    //       // setAttribte es un metodo que recibe dos parámetros
+    //       // el atributo a asignar y el valor del atributo
+    //       $pokemonImage.setAttribute('src', pokemon.sprites.front_default);
+    //       console.log(pokemon.sprites.front_default);
+    //     })
+    // })
+    // };
+
+
+    // const getPokemon = fetch('https://pokeapi.co/api/v2/pokemon/pikachu');
+
+    // getPokemon.then((respuesta) => {
+    //   console.log(respuesta);
+    //   respuesta.json()
+    //     .then((pokemon) => {
+    //       console.log(pokemon.name);
+    //       // El $ es una convención para marcar un selector
+    //       // Viene de el uso de jQuery y nos indica un elemento del DOM
+    //       const $pokemon = document.getElementById('pokemon');
+    //       const $pokemonImage = document.getElementById('pokemon-image');
+    //       // innerHTML es una propiedad
+    //       $pokemon.innerHTML = pokemon.name;
+    //       // setAttribte es un metodo que recibe dos parámetros
+    //       // el atributo a asignar y el valor del atributo
+    //       $pokemonImage.setAttribute('src', pokemon.sprites.front_default);
+    //       console.log(pokemon.sprites.front_default);
+
+    //     })
+    // })
+
+    // Siempre dar feedback al usuario de que se esta ejecutando un código asincróno
+
+  </script>
+</body>
+
+</html>
